@@ -1,21 +1,19 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/session";
+import { lookupUserRole } from "@/lib/roles";
 
 export async function assertAdmin() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
 
   if (!user) {
     return { supabase, user: null, isAdmin: false };
   }
 
-  const { data: roleRow } = await supabase
-    .from("roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const role = await lookupUserRole(user.id);
+  const isAdmin = role === "ADMIN";
 
-  return { supabase, user, isAdmin: roleRow?.role === "ADMIN" };
+  return {
+    supabase,
+    user,
+    isAdmin,
+  };
 }
-

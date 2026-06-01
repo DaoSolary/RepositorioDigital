@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseDbClient } from "@/lib/supabase/db";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseDbClient();
 
   // incrementa contador (best-effort)
   await supabase.rpc("increment_tcc_download", { p_tcc_id: id });

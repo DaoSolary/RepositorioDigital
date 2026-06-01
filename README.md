@@ -1,19 +1,42 @@
 ## Acervo Digital de TCC (Next.js + Supabase)
 
-Aplicação web completa para **listar, buscar e visualizar TCCs** (área pública) e permitir que **administradores** façam **upload, edição e exclusão** (área `/admin`).
+Aplicação web completa para **listar, buscar e visualizar TCCs** (área pública), **gestão administrativa** e **integração via API** para sites universitários, bibliotecas digitais e apps móveis.
 
 ### Stack
 
-- **Next.js (App Router)** + TypeScript
-- **Tailwind CSS**
+- **Next.js 15 (App Router)** + TypeScript
+- **Tailwind CSS v4**
 - **Supabase**: Postgres + Auth + Storage
 
 ### Funcionalidades
 
-- **Área pública**: listagem paginada, busca (debounce), filtros (curso/ano), detalhe, **visualizador de PDF** e download
-- **Auth**: login/sair (email/senha)
-- **RBAC**: `ADMIN` / `USER` (admin gerencia TCCs)
-- **Extras**: **favoritar** e **contador de downloads**
+#### Usuários
+- Cadastro com **confirmação por email** (Supabase Auth)
+- Login com email/senha e **Google OAuth**
+- **Recuperação de senha** e reenvio de verificação
+- **Perfil completo** (`/account/profile`)
+- **Favoritos** (`/account/favorites`)
+- **Estatísticas públicas**: mais vistos, mais baixados, autores em destaque, áreas em alta
+
+#### Administrador (`/admin`)
+- **Dashboard** com totais, gráficos e trabalhos recentes
+- Gestão de TCCs, usuários (criar, suspender, roles, resetar senha)
+- **Logs de atividade** e **auditoria**
+- **Backup** exportável (JSON)
+- **Chaves de API** para integrações
+
+#### API pública v1
+- `GET /api/v1/tccs` — listagem com busca e filtros
+- `GET /api/v1/tccs/[id]` — detalhe
+- `GET /api/v1/stats` — estatísticas
+- Autenticação: header `X-API-Key`
+- Documentação: `/api-docs`
+
+---
+
+## Deploy em produção (Vercel)
+
+Guia completo: **[instrucao.md](./instrucao.md)** (Git → GitHub → Vercel → Supabase).
 
 ---
 
@@ -21,26 +44,40 @@ Aplicação web completa para **listar, buscar e visualizar TCCs** (área públi
 
 ### 1) Criar projeto no Supabase
 
-- Crie um projeto no Supabase e copie:
-  - `Project URL`
-  - `anon public key`
-  - (opcional) `service_role key`
+Copie URL, anon key e (recomendado) service role key.
 
 ### 2) Banco (SQL + RLS)
 
-No Supabase, abra **SQL Editor** e rode:
+No **SQL Editor**, execute em ordem:
 
-- `supabase/schema.sql`
+1. `supabase/schema.sql`
+2. `supabase/migrations/002_extended_features.sql`
 
-Depois, em **Storage**:
+Em **Storage**, crie o bucket **`tccs`** (Private).
 
-- Crie o bucket **`tccs`**
-- Marque como **Private**
+### 3) Auth no Supabase (Dashboard)
 
-### 3) Criar um usuário admin
+- **Authentication → Providers → Google**: habilite e configure Client ID/Secret
+- **Authentication → URL Configuration**:
+  - Site URL: `http://localhost:3000` (ou produção)
+  - Redirect URLs: `http://localhost:3000/auth/callback`
+- **Authentication → Email**: habilite confirmação de email para novos cadastros
 
-1. No Supabase Auth, crie um usuário (email/senha)
-2. No SQL Editor, associe o role:
+### 4) Variáveis de ambiente
+
+Copie `.env.example` → `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_MAX_PDF_MB=20
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` é necessária para Admin (usuários, backup, API keys, logs).
+
+### 5) Criar admin
 
 ```sql
 insert into public.roles (user_id, role)
@@ -48,18 +85,7 @@ values ('<UUID_DO_USER>', 'ADMIN')
 on conflict (user_id) do update set role = excluded.role;
 ```
 
-### 4) Variáveis de ambiente
-
-Copie `.env.example` para `.env.local` e preencha:
-
-```bash
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-NEXT_PUBLIC_MAX_PDF_MB=20
-```
-
-### 5) Instalar e rodar
+### 6) Rodar
 
 ```bash
 npm install
@@ -72,21 +98,18 @@ Acesse `http://localhost:3000`.
 
 ## Rotas principais
 
-- **Público**
-  - `/` (lista/busca/filtros/paginação)
-  - `/tcc/[id]` (detalhe + PDF embed + download)
-- **Auth**
-  - `/login`
-- **Admin (RBAC)**
-  - `/admin`
-  - `/admin/tccs/new`
-  - `/admin/tccs/[id]/edit`
+| Área | Rotas |
+|------|--------|
+| Público | `/`, `/tcc/[id]`, `/estatisticas`, `/api-docs` |
+| Auth | `/login`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/verify-email` |
+| Conta | `/account/profile`, `/account/favorites`, `/account/security` |
+| Admin | `/admin`, `/admin/tccs`, `/admin/users`, `/admin/activity`, `/admin/audit`, `/admin/backup`, `/admin/api-keys` |
 
 ---
 
-## Notas de segurança
+## Segurança
 
-- O acesso a `/admin` é protegido no `middleware.ts` e reforçado em `/api/admin/*`.
-- Uploads aceitam **apenas PDF** e respeitam `NEXT_PUBLIC_MAX_PDF_MB`.
-- O `pdf_path` é salvo no banco e o acesso ao arquivo é feito via **Signed URL**.
-
+- Middleware protege `/admin` (sessão + role ADMIN)
+- Contas suspensas são bloqueadas no login
+- RLS no Postgres; uploads apenas PDF
+- Logs de atividade e trilha de auditoria para ações administrativas

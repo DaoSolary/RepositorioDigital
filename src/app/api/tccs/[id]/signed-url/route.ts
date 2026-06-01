@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseDbClient } from "@/lib/supabase/db";
 
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseDbClient();
 
   const { data: tcc } = await supabase.from("tccs").select("pdf_path").eq("id", id).maybeSingle();
   if (!tcc) return NextResponse.json({ error: "Não encontrado." }, { status: 404 });

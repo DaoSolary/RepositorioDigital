@@ -28,7 +28,7 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="surface-card flex items-center justify-between gap-3 rounded-2xl px-4 py-3">
       <div className="text-sm text-zinc-500">
         Página {page} de {totalPages} • {total} resultados
       </div>

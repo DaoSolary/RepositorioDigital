@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseDbClient } from "@/lib/supabase/db";
 
 const QuerySchema = z.object({
   q: z.string().optional(),
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseDbClient();
 
   let query = supabase
     .from("tccs")

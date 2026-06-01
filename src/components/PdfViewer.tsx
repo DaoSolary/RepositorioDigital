@@ -14,8 +14,8 @@ export function PdfViewer({ tccId }: { tccId: string }) {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Falha ao carregar PDF.");
         if (!cancelled) setUrl(json.url);
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message ?? "Erro ao carregar PDF.");
+      } catch (e: unknown) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Erro ao carregar PDF.");
       }
     })();
     return () => {

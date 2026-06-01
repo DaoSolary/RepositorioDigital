@@ -22,8 +22,8 @@ export function FavoriteButton({
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "Falha ao favoritar.");
       setIsFavorite(Boolean(json.isFavorite));
-    } catch (e: any) {
-      setError(e?.message ?? "Erro inesperado.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erro inesperado.");
     } finally {
       setLoading(false);
     }

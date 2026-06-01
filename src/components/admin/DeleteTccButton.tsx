@@ -16,8 +16,8 @@ export function DeleteTccButton({ id }: { id: string }) {
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "Falha ao excluir.");
       window.location.reload();
-    } catch (e: any) {
-      setError(e?.message ?? "Erro ao excluir.");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Erro ao excluir.");
     } finally {
       setLoading(false);
     }

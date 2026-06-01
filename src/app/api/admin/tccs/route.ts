@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `PDF excede ${env.NEXT_PUBLIC_MAX_PDF_MB}MB.` }, { status: 400 });
   }
 
-  const type = (file as any).type as string | undefined;
+  const type = file.type || "";
   if (type && type !== "application/pdf") {
     return NextResponse.json({ error: "Arquivo deve ser PDF." }, { status: 400 });
   }

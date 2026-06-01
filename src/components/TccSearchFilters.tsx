@@ -4,6 +4,7 @@ import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 
 export function TccSearchFilters({
@@ -40,31 +41,37 @@ export function TccSearchFilters({
   }, [dq, curso, ano]);
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <div className="sm:col-span-1">
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Buscar por título, autor, palavras-chave..."
-        />
+    <Card className="p-4 sm:p-5">
+      <div className="mb-3">
+        <h2 className="section-title text-base font-semibold">Buscar trabalhos</h2>
+        <p className="text-xs text-zinc-500">Filtre por título, curso ou ano de publicação.</p>
       </div>
-      <Select value={curso} onChange={(e) => setCurso(e.target.value)}>
-        <option value="">Todos os cursos</option>
-        {courses.map((c) => (
-          <option key={c} value={c}>
-            {c}
-          </option>
-        ))}
-      </Select>
-      <Select value={ano} onChange={(e) => setAno(e.target.value)}>
-        <option value="">Todos os anos</option>
-        {years.map((y) => (
-          <option key={y} value={String(y)}>
-            {y}
-          </option>
-        ))}
-      </Select>
-    </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="sm:col-span-1">
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por título, autor, palavras-chave..."
+          />
+        </div>
+        <Select value={curso} onChange={(e) => setCurso(e.target.value)}>
+          <option value="">Todos os cursos</option>
+          {courses.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </Select>
+        <Select value={ano} onChange={(e) => setAno(e.target.value)}>
+          <option value="">Todos os anos</option>
+          {years.map((y) => (
+            <option key={y} value={String(y)}>
+              {y}
+            </option>
+          ))}
+        </Select>
+      </div>
+    </Card>
   );
 }
 

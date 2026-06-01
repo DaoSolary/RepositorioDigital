@@ -3,9 +3,10 @@ import { Container } from "@/components/Container";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fetchTccById } from "@/lib/tccs";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/session";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { PdfViewer } from "@/components/PdfViewer";
+import { TrackView } from "@/components/TrackView";
 
 export default async function TccDetailPage({
   params,
@@ -24,10 +25,7 @@ export default async function TccDetailPage({
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getServerAuth();
 
   let isFavorite = false;
   if (user) {
@@ -43,6 +41,7 @@ export default async function TccDetailPage({
   return (
     <main className="flex-1">
       <Container className="py-10 space-y-6">
+        <TrackView tccId={tcc.id} />
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1">
             <Link href="/" className="text-sm text-zinc-500 hover:underline">
@@ -53,6 +52,15 @@ export default async function TccDetailPage({
               {tcc.autor} • {tcc.curso} • {tcc.ano}
             </div>
             <div className="text-sm text-zinc-600 dark:text-zinc-400">Orientador: {tcc.orientador}</div>
+            <div className="text-xs text-zinc-500">
+              Enviado em{" "}
+              {new Date(tcc.created_at).toLocaleDateString("pt-BR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}{" "}
+              • Visualizações: {tcc.view_count} • Downloads: {tcc.download_count}
+            </div>
           </div>
           <div className="flex flex-col items-stretch gap-2 sm:items-end">
             <Link href={`/api/tccs/${tcc.id}/download`}>

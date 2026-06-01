@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getServerAuth } from "@/lib/supabase/session";
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const supabase = await createSupabaseServerClient();
+  const { supabase, user } = await getServerAuth();
 
   const { data: tcc, error } = await supabase
     .from("tccs")
@@ -15,10 +15,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!tcc) return NextResponse.json({ error: "Não encontrado." }, { status: 404 });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let isFavorite = false;
   if (user) {

@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -32,22 +31,35 @@ export function AdminTccForm({
 }) {
   const router = useRouter();
   const [error, setError] = React.useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({});
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: initialValues as any,
+    defaultValues: initialValues,
   });
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
 
   async function onSubmit(values: FormValues) {
     setError(null);
+    setFieldErrors({});
+
+    const parsed = FormSchema.safeParse(values);
+    if (!parsed.success) {
+      const fe: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "form");
+        if (!fe[key]) fe[key] = issue.message;
+      }
+      setFieldErrors(fe);
+      return;
+    }
+
     const fd = new FormData();
-    for (const [k, v] of Object.entries(values)) {
+    for (const [k, v] of Object.entries(parsed.data)) {
       fd.set(k, String(v ?? ""));
     }
 
@@ -80,37 +92,35 @@ export function AdminTccForm({
           <div className="mt-1">
             <Input {...register("titulo")} />
           </div>
-          {errors.titulo ? <div className="mt-1 text-xs text-red-600">{errors.titulo.message}</div> : null}
+          {fieldErrors.titulo ? <div className="mt-1 text-xs text-red-600">{fieldErrors.titulo}</div> : null}
         </div>
         <div>
           <label className="text-sm font-medium">Autor</label>
           <div className="mt-1">
             <Input {...register("autor")} />
           </div>
-          {errors.autor ? <div className="mt-1 text-xs text-red-600">{errors.autor.message}</div> : null}
+          {fieldErrors.autor ? <div className="mt-1 text-xs text-red-600">{fieldErrors.autor}</div> : null}
         </div>
         <div>
           <label className="text-sm font-medium">Orientador</label>
           <div className="mt-1">
             <Input {...register("orientador")} />
           </div>
-          {errors.orientador ? (
-            <div className="mt-1 text-xs text-red-600">{errors.orientador.message}</div>
-          ) : null}
+          {fieldErrors.orientador ? <div className="mt-1 text-xs text-red-600">{fieldErrors.orientador}</div> : null}
         </div>
         <div>
           <label className="text-sm font-medium">Curso</label>
           <div className="mt-1">
             <Input {...register("curso")} />
           </div>
-          {errors.curso ? <div className="mt-1 text-xs text-red-600">{errors.curso.message}</div> : null}
+          {fieldErrors.curso ? <div className="mt-1 text-xs text-red-600">{fieldErrors.curso}</div> : null}
         </div>
         <div>
           <label className="text-sm font-medium">Ano</label>
           <div className="mt-1">
             <Input type="number" {...register("ano", { valueAsNumber: true })} />
           </div>
-          {errors.ano ? <div className="mt-1 text-xs text-red-600">{errors.ano.message}</div> : null}
+          {fieldErrors.ano ? <div className="mt-1 text-xs text-red-600">{fieldErrors.ano}</div> : null}
         </div>
         <div>
           <label className="text-sm font-medium">Palavras-chave (separadas por vírgula)</label>
@@ -125,7 +135,7 @@ export function AdminTccForm({
         <div className="mt-1">
           <Textarea {...register("resumo")} />
         </div>
-        {errors.resumo ? <div className="mt-1 text-xs text-red-600">{errors.resumo.message}</div> : null}
+        {fieldErrors.resumo ? <div className="mt-1 text-xs text-red-600">{fieldErrors.resumo}</div> : null}
       </div>
 
       <div>

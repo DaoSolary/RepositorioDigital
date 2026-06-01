@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { TccBaseSchema } from "@/lib/validators/tcc";
 import { assertAdmin } from "@/lib/admin";
 import { env } from "@/lib/env";
+import { writeAudit, recordTccHistory } from "@/lib/audit";
+import { logActivity } from "@/lib/activity";
 
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { supabase, isAdmin } = await assertAdmin();
-  if (!isAdmin) return NextResponse.json({ error: "Proibido." }, { status: 403 });
+  const { supabase, isAdmin, user } = await assertAdmin();
+  if (!isAdmin || !user) return NextResponse.json({ error: "Proibido." }, { status: 403 });
 
   const form = await req.formData();
   const raw = {
@@ -42,7 +44,7 @@ export async function PATCH(
     if (maybeFile.size > maxBytes) {
       return NextResponse.json({ error: `PDF excede ${env.NEXT_PUBLIC_MAX_PDF_MB}MB.` }, { status: 400 });
     }
-    const type = (maybeFile as any).type as string | undefined;
+    const type = maybeFile.type || "";
     if (type && type !== "application/pdf") {
       return NextResponse.json({ error: "Arquivo deve ser PDF." }, { status: 400 });
     }
@@ -73,6 +75,10 @@ export async function PATCH(
     await supabase.storage.from("tccs").remove([existing.pdf_path]);
   }
 
+  await recordTccHistory({ tccId: id, changedBy: user.id, action: "update", snapshot: parsed.data }).catch(() => null);
+  await writeAudit({ actorId: user.id, action: "update", tableName: "tccs", recordId: id, newData: parsed.data }).catch(() => null);
+  await logActivity({ userId: user.id, action: "admin_update_tcc", resourceType: "tcc", resourceId: id }).catch(() => null);
+
   return NextResponse.json({ ok: true });
 }
 
@@ -81,8 +87,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { supabase, isAdmin } = await assertAdmin();
-  if (!isAdmin) return NextResponse.json({ error: "Proibido." }, { status: 403 });
+  const { supabase, isAdmin, user } = await assertAdmin();
+  if (!isAdmin || !user) return NextResponse.json({ error: "Proibido." }, { status: 403 });
 
   const { data: existing } = await supabase
     .from("tccs")
@@ -95,6 +101,9 @@ export async function DELETE(
   if (del.error) return NextResponse.json({ error: del.error.message }, { status: 500 });
 
   await supabase.storage.from("tccs").remove([existing.pdf_path]);
+  await recordTccHistory({ tccId: id, changedBy: user.id, action: "delete", snapshot: { pdf_path: existing.pdf_path } }).catch(() => null);
+  await writeAudit({ actorId: user.id, action: "delete", tableName: "tccs", recordId: id }).catch(() => null);
+  await logActivity({ userId: user.id, action: "admin_delete_tcc", resourceType: "tcc", resourceId: id }).catch(() => null);
   return NextResponse.json({ ok: true });
 }
 

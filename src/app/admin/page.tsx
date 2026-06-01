@@ -1,64 +1,97 @@
 import Link from "next/link";
-import { Container } from "@/components/Container";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { DeleteTccButton } from "@/components/admin/DeleteTccButton";
+import { SimpleBarChart } from "@/components/SimpleBarChart";
+import { fetchAdminDashboardStats } from "@/lib/stats";
 
 export default async function AdminDashboardPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: tccs, error } = await supabase
-    .from("tccs")
-    .select("id,titulo,autor,curso,ano,created_at,download_count")
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const stats = await fetchAdminDashboardStats();
 
   return (
-    <main className="flex-1">
-      <Container className="py-10 space-y-6">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">Gerencie o acervo de TCC.</p>
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider text-zinc-500">
+            <span>Total de trabalhos</span>
+            <span>📚</span>
           </div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{stats.totalTccs}</div>
+        </Card>
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider text-zinc-500">
+            <span>Total de downloads</span>
+            <span>⬇️</span>
+          </div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{stats.totalDownloads}</div>
+        </Card>
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider text-zinc-500">
+            <span>Visualizações</span>
+            <span>👁️</span>
+          </div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{stats.totalViews}</div>
+        </Card>
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs uppercase tracking-wider text-zinc-500">
+            <span>Usuários ativos (30d)</span>
+            <span>👤</span>
+          </div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{stats.activeUsers}</div>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="p-5">
+          <h2 className="section-title text-base font-semibold">Downloads por mês</h2>
+          <div className="mt-4">
+            <SimpleBarChart
+              items={stats.downloadsByMonth.map((m) => ({ label: m.month, value: m.count }))}
+            />
+          </div>
+        </Card>
+        <Card className="p-5">
+          <h2 className="section-title text-base font-semibold">Cursos mais acessados</h2>
+          <div className="mt-4">
+            <SimpleBarChart
+              items={(stats.topCourses as { curso: string; total_views: number }[]).map((c) => ({
+                label: c.curso,
+                value: Number(c.total_views ?? 0),
+              }))}
+            />
+          </div>
+        </Card>
+      </div>
+
+      <Card className="p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="section-title text-base font-semibold">Trabalhos recentes</h2>
           <Link href="/admin/tccs/new">
-            <Button>Novo TCC</Button>
+            <Button size="sm">Novo TCC</Button>
           </Link>
         </div>
-
-        {error ? (
-          <Card className="p-6">Erro ao carregar: {error.message}</Card>
-        ) : (
-          <div className="grid grid-cols-1 gap-3">
-            {(tccs ?? []).map((t) => (
-              <Card key={t.id} className="p-5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <div className="text-base font-semibold">{t.titulo}</div>
-                    <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                      {t.autor} • {t.curso} • {t.ano} • Downloads: {t.download_count}
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Link href={`/tcc/${t.id}`}>
-                        <Button variant="secondary" size="sm">
-                          Ver
-                        </Button>
-                      </Link>
-                      <Link href={`/admin/tccs/${t.id}/edit`}>
-                        <Button variant="secondary" size="sm">
-                          Editar
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                  <DeleteTccButton id={t.id} />
+        <div className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
+          {stats.recentTccs.map((t) => (
+            <div key={t.id} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="font-medium">{t.titulo}</div>
+                <div className="text-sm text-zinc-500">
+                  {t.autor} • {t.curso} • {new Date(t.created_at).toLocaleDateString("pt-BR")}
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </Container>
-    </main>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <span>{t.view_count} views</span>
+                <span>•</span>
+                <span>{t.download_count} downloads</span>
+                <Link href={`/admin/tccs/${t.id}/edit`}>
+                  <Button variant="secondary" size="sm">
+                    Editar
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 }
-

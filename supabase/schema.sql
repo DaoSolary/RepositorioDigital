@@ -22,6 +22,7 @@ create table if not exists public.tccs (
   palavras_chave text[] not null default '{}'::text[],
   pdf_path text not null, -- caminho no bucket "tccs" (ex: <uuid>.pdf)
   download_count integer not null default 0,
+  view_count integer not null default 0,
   created_at timestamptz not null default now()
 );
 
@@ -105,6 +106,20 @@ as $$
 $$;
 
 grant execute on function public.increment_tcc_download(uuid) to anon, authenticated;
+
+-- Incremento seguro de visualização (extra)
+create or replace function public.increment_tcc_view(p_tcc_id uuid)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  update public.tccs
+  set view_count = view_count + 1
+  where id = p_tcc_id;
+$$;
+
+grant execute on function public.increment_tcc_view(uuid) to anon, authenticated;
 
 drop policy if exists "tccs_insert_admin" on public.tccs;
 create policy "tccs_insert_admin"

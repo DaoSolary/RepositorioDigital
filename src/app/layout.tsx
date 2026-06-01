@@ -1,36 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Footer } from "@/components/Footer";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Acervo Digital de TCC",
   description: "Sistema de acervo digital de TCCs (busca, visualização e gestão).",
+  icons: {
+    icon: "/unikivi%20(2).jfif",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-black dark:text-zinc-50">
-        <Header />
-        {children}
+    <html lang="pt-BR" className="h-full antialiased">
+      <body className="app-shell min-h-full flex flex-col bg-zinc-100 font-sans text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+        <ToastProvider>
+          <Header />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
