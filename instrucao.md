@@ -1,6 +1,8 @@
-# Deploy em produção — Git + Vercel
+# Deploy em produção — Git + Vercel + Supabase
 
-Guia passo a passo para publicar o **Acervo Digital de TCC** na Vercel, com Supabase em produção.
+Guia passo a passo para publicar o **Acervo Digital de TCC** na **Vercel**, com base de dados e auth no **Supabase**.
+
+> Este projeto usa apenas **Vercel** (hosting) e **Supabase** (BD, auth, storage). Não é necessário Render nem outra plataforma.
 
 ---
 
