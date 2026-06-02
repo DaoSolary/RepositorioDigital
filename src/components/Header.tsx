@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { getHeaderAuth } from "@/lib/auth";
 import { Container } from "@/components/Container";
 import { Button } from "@/components/ui/button";
@@ -30,12 +29,10 @@ export async function Header() {
         <div className="flex items-center gap-3">
           <Link href="/" className="flex cursor-pointer items-center gap-3">
             <div className="relative h-9 w-9 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-700">
-              <Image
+              <img
                 src="/unikivi%20(2).jfif"
                 alt="Universidade Kimpa Vita"
-                fill
-                className="object-cover"
-                sizes="36px"
+                className="h-full w-full object-cover"
               />
             </div>
             <div className="leading-tight">

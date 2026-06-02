@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Acervo Digital de TCC",
   description: "Sistema de acervo digital de TCCs (busca, visualização e gestão).",
   icons: {
-    icon: "/unikivi%20(2).jfif",
+    icon: "/favicon.ico",
   },
 };
 

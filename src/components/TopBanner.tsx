@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Container } from "@/components/Container";
 
 export function TopBanner() {
@@ -17,13 +16,11 @@ export function TopBanner() {
 
           <div className="w-full sm:w-[320px]">
             <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-              <Image
+              <img
                 src="/unikivi%20(2).jfif"
                 alt="Identidade visual"
-                width={640}
-                height={360}
                 className="h-28 w-full object-cover sm:h-24"
-                priority
+                loading="eager"
               />
             </div>
           </div>
