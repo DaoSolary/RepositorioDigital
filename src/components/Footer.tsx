@@ -13,9 +13,9 @@ export async function Footer() {
       <Container className="py-10">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-3">
-            <div className="text-sm font-semibold tracking-tight">Repositorio Cientifico</div>
+            <div className="text-sm font-semibold tracking-tight">Repositorio Digital</div>
             <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Repositório institucional de Trabalhos Cientifico da Universidade Kimpa Vita.
+              Repositório institucional de Trabalhos Académicos e Cientificos da Universidade Kimpa Vita.
             </p>
           </div>
           <div>
@@ -43,7 +43,6 @@ export async function Footer() {
             <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Institucional</div>
             <ul className="mt-3 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <li>Universidade Kimpa Vita</li>
-              <li>Repositorio Cientifico</li>
               <li>Suporte: adsutechcomservice@gmail.com</li>
             </ul>
           </div>

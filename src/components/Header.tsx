@@ -36,7 +36,7 @@ export async function Header() {
               />
             </div>
             <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-tight">Repositorio Cientifico</div>
+              <div className="text-sm font-semibold tracking-tight">Repositorio Digital</div>
               <div className="text-[11px] text-zinc-500">Universidade Kimpa Vita</div>
             </div>
           </Link>
