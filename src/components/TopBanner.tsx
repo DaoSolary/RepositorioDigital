@@ -8,9 +8,9 @@ export function TopBanner() {
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl space-y-2">
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Universidade Kimpa Vita</p>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Acervo Digital de Monografias</h1>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Repositorio Académico e Cientifico</h1>
             <p className="text-zinc-600 dark:text-zinc-400">
-              Pesquise, visualize e faça download dos TCCs de todos os cursos.
+              Pesquise, visualize e faça download de trabalhos Académico e Cientifico.
             </p>
           </div>
 

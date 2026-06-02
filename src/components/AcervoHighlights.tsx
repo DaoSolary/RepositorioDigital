@@ -104,7 +104,7 @@ export async function AcervoHighlights() {
 
       {!hasData ? (
         <p className="lg:col-span-2 text-center text-sm text-zinc-500">
-          O acervo ainda não possui trabalhos cadastrados. Os destaques aparecerão automaticamente conforme os TCCs forem publicados.
+          O Repositorio ainda não possui trabalhos cadastrados. Os destaques aparecerão automaticamente conforme os trabalhos forem publicados.
         </p>
       ) : null}
     </div>

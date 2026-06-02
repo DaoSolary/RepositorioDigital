@@ -29,7 +29,7 @@ export default async function Home({
 
       <Container className="py-10">
         <div className="mb-4">
-          <h1 className="section-title text-3xl font-semibold tracking-tight">Catálogo de TCCs</h1>
+          <h1 className="section-title text-3xl font-semibold tracking-tight">Catálogo de Trabalhos</h1>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
             Explore trabalhos por curso, ano e relevância acadêmica.
           </p>
@@ -50,7 +50,7 @@ export default async function Home({
         <div className="mt-8 grid grid-cols-1 gap-4">
           {items.length === 0 ? (
             <Card className="p-6">
-              <div className="font-medium">Nenhum TCC encontrado</div>
+              <div className="font-medium">Nenhum Trabalho encontrado</div>
               <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                 Tente ajustar a busca ou os filtros.
               </div>
