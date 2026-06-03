@@ -84,10 +84,7 @@ export function PdfViewer({ tccId }: PdfViewerProps) {
           </Button>
         </Link>
       </div>
-      <p className="text-xs text-zinc-500">
-        No telemóvel, o leitor integrado do browser abre em ecrã completo. Use o botão «Voltar»
-        do browser para regressar ao trabalho.
-      </p>
+      
 
       {loading ? (
         <div className="flex h-48 items-center justify-center rounded-lg border border-zinc-200 bg-white text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950">
