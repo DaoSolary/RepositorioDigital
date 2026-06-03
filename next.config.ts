@@ -21,7 +21,8 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
-      // Permite embutir PDF assinado do Supabase (Storage) no <iframe>.
+      // PDF inline: iframe (desktop), object/embed com blob: (Android/iOS).
+      "object-src 'self' blob:",
       "frame-src 'self' blob: https://*.supabase.co",
       "frame-ancestors 'self'",
       "base-uri 'self'",

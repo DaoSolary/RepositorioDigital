@@ -23,6 +23,8 @@ export async function GET(
       "Content-Disposition": `inline; filename="tcc-${id}.pdf"`,
       "Cache-Control": "private, max-age=300",
       "X-Content-Type-Options": "nosniff",
+      // Permite leitura pelo visualizador PDF.js (fetch) se necessário no cliente.
+      "Accept-Ranges": "bytes",
     },
   });
 }
