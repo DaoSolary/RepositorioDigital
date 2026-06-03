@@ -19,7 +19,7 @@ export default async function TccDetailPage({
     return (
       <main className="flex-1">
         <Container className="py-10">
-          <Card className="p-6">TCC não encontrado.</Card>
+          <Card className="p-6">Trabalho não encontrado.</Card>
         </Container>
       </main>
     );

@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 
 export const metadata: Metadata = {
-  title: "Acervo Digital de TCC",
+  title: "Repositorio",
   description: "Sistema de acervo digital de TCCs (busca, visualização e gestão).",
   icons: {
     icon: "/favicon.ico",
