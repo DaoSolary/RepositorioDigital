@@ -1,8 +1,9 @@
-import Link from "next/link";
+import { Suspense } from "react";
 import { Container } from "@/components/Container";
 import { Card } from "@/components/ui/card";
 import { fetchFacets, fetchTccs } from "@/lib/tccs";
 import { TccSearchFilters } from "@/components/TccSearchFilters";
+import { TccCatalogCard } from "@/components/TccCatalogCard";
 import { Pagination } from "@/components/Pagination";
 import { TopBanner } from "@/components/TopBanner";
 
@@ -44,7 +45,9 @@ export default async function Home({
         ) : null}
 
         <div className="mt-6">
-          <TccSearchFilters courses={facets.courses} years={facets.years} />
+          <Suspense fallback={<Card className="p-4 text-sm text-zinc-500">Carregando filtros…</Card>}>
+            <TccSearchFilters courses={facets.courses} years={facets.years} />
+          </Suspense>
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-4">
@@ -56,34 +59,7 @@ export default async function Home({
               </div>
             </Card>
           ) : (
-            items.map((t) => (
-              <Card key={t.id} className="p-5 transition hover:-translate-y-0.5">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <Link href={`/tcc/${t.id}`} className="text-lg font-semibold tracking-tight hover:underline">
-                      {t.titulo}
-                    </Link>
-                    <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                      {t.autor} • {t.curso} • {t.ano}
-                    </div>
-                    <div className="mt-1 text-xs text-zinc-500">
-                      Enviado em{" "}
-                      {new Date(t.created_at).toLocaleDateString("pt-BR", {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })}
-                    </div>
-                  </div>
-                  <div className="rounded-full bg-zinc-100 px-2.5 py-1 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
-                    Visualizações: {t.view_count} • Downloads: {t.download_count}
-                  </div>
-                </div>
-                <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-300">
-                  {t.resumo}
-                </p>
-              </Card>
-            ))
+            items.map((t) => <TccCatalogCard key={t.id} t={t} />)
           )}
         </div>
 

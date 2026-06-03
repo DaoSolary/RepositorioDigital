@@ -30,12 +30,16 @@ export default async function FavoritesPage() {
               const tcc = Array.isArray(raw) ? raw[0] : raw;
               if (!tcc) return null;
               return (
-                <Card key={f.tcc_id} className="p-5 transition hover:-translate-y-0.5">
-                  <Link href={`/tcc/${tcc.id}`} className="text-lg font-semibold hover:underline">
-                    {tcc.titulo}
-                  </Link>
-                  <div className="mt-1 text-sm text-zinc-500">{tcc.autor} • {tcc.curso} • {tcc.ano}</div>
-                </Card>
+                <Link
+                  key={f.tcc_id}
+                  href={`/tcc/${tcc.id}`}
+                  className="group block rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
+                >
+                  <Card className="p-5 transition hover:-translate-y-0.5 active:scale-[0.998]">
+                    <div className="text-lg font-semibold group-hover:underline">{tcc.titulo}</div>
+                    <div className="mt-1 text-sm text-zinc-500">{tcc.autor} • {tcc.curso} • {tcc.ano}</div>
+                  </Card>
+                </Link>
               );
             })
           )}

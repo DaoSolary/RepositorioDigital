@@ -25,20 +25,28 @@ export function TccSearchFilters({
   const dq = useDebouncedValue(q, 350);
 
   React.useEffect(() => {
-    const sp = new URLSearchParams(searchParams.toString());
-    const setOrDelete = (k: string, v: string) => {
-      if (v) sp.set(k, v);
-      else sp.delete(k);
-    };
+    const sp = new URLSearchParams();
+    const trimmedQ = dq.trim();
+    if (trimmedQ) sp.set("q", trimmedQ);
+    if (curso) sp.set("curso", curso);
+    if (ano) sp.set("ano", ano);
 
-    setOrDelete("q", dq.trim());
-    setOrDelete("curso", curso);
-    setOrDelete("ano", ano);
-    sp.delete("page"); // reset pagina ao filtrar
+    const nextFilters = sp.toString();
+    const current = new URLSearchParams(searchParams.toString());
+    current.delete("page");
+    const currentFilters = current.toString();
+    const filtersChanged = nextFilters !== currentFilters;
 
-    router.replace(`${pathname}?${sp.toString()}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dq, curso, ano]);
+    if (!filtersChanged && !searchParams.has("page")) return;
+
+    const href = nextFilters ? `${pathname}?${nextFilters}` : pathname;
+    const currentHref = searchParams.toString()
+      ? `${pathname}?${searchParams.toString()}`
+      : pathname;
+    if (href === currentHref) return;
+
+    router.replace(href);
+  }, [dq, curso, ano, pathname, router, searchParams]);
 
   return (
     <Card className="p-4 sm:p-5">

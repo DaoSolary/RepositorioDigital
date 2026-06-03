@@ -27,11 +27,21 @@ export function PdfViewer({ tccId }: { tccId: string }) {
   if (!url) return <div className="text-sm text-zinc-500">Carregando PDF…</div>;
 
   return (
-    <iframe
-      title="Visualizador de PDF"
-      src={url}
-      className="h-[70vh] w-full rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
-    />
+    <div className="space-y-3">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-11 items-center rounded-xl border border-zinc-200 bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 hover:bg-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800 sm:hidden"
+      >
+        Abrir PDF no navegador
+      </a>
+      <iframe
+        title="Visualizador de PDF"
+        src={url}
+        className="h-[60vh] w-full rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 sm:h-[70vh]"
+      />
+    </div>
   );
 }
 
